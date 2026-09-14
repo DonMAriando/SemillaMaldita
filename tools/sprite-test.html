@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Semilla Maldita — banco de pruebas de sprites</title>
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    background: #06060b;
+    color: #cfd6e6;
+    font: 12px/1.4 Consolas, "Courier New", monospace;
+  }
+  #bar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center;
+    padding: 10px 14px;
+    background: #0c0c16;
+    border-bottom: 1px solid #23233a;
+  }
+  #bar label { cursor: pointer; user-select: none; white-space: nowrap; }
+  #bar input[type=checkbox] { vertical-align: -2px; }
+  #bar .sep { width: 1px; height: 18px; background: #26263c; }
+  #bar b { color: #ffd77a; font-weight: normal; }
+  #fps { color: #7ef7c0; min-width: 76px; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+
+<div id="bar">
+  <b>opts:</b>
+  <label><input type="checkbox" data-flag="hurt"> hurt</label>
+  <label><input type="checkbox" data-flag="frozen"> frozen</label>
+  <label><input type="checkbox" data-flag="burning"> burning</label>
+  <label><input type="checkbox" data-flag="poisoned"> poisoned</label>
+  <label><input type="checkbox" data-flag="shielded"> shielded</label>
+  <label><input type="checkbox" data-flag="charging"> charging</label>
+  <label><input type="checkbox" data-flag="elite"> elite</label>
+  <label><input type="checkbox" data-flag="enraged"> enraged</label>
+  <label><input type="checkbox" data-flag="dead"> dead</label>
+  <div class="sep"></div>
+  <label><input type="checkbox" data-flag="facing"> facing -1</label>
+  <label><input type="checkbox" data-flag="attacking"> attacking (heroe)</label>
+  <label><input type="checkbox" data-flag="dashing"> dashing (heroe)</label>
+  <label><input type="checkbox" data-flag="shield"> shield (heroe)</label>
+  <label><input type="checkbox" data-flag="lowHp"> lowHp (heroe)</label>
+  <div class="sep"></div>
+  <label><input type="checkbox" id="cells" checked> ver casilla</label>
+  <label><input type="checkbox" id="pause"> pausa</label>
+  <div class="sep"></div>
+  <span id="fps">-- fps</span>
+</div>
+
+<canvas id="cv"></canvas>
+
+<script src="../src/70-sprites.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var cv = document.getElementById("cv");
+  var ctx = cv.getContext("2d");
+
+  // --- datos de la rejilla -------------------------------------------------
+  var CREATURES = [
+    "rat", "bat", "slime", "goblin", "archer", "spider", "skeleton", "bomber",
+    "cultist", "orc", "wraith", "shaman", "golem", "mimic", "knight", "demon",
+    "hound", "eye"
+  ];
+  var BOSSES = ["boss_rat", "boss_bones", "boss_troll", "boss_devourer", "boss_seed"];
+  var HEROES = ["vagabundo", "berserker", "arcanista", "centinela", "ladron"];
+  var ITEMS = [
+    "potion", "potionBig", "gold", "gem", "chest", "chestOpen", "heart", "sword",
+    "shield", "scroll", "key", "bomb", "relic", "stairs", "altar", "forge",
+    "skull", "torch", "spikes", "web", "rune"
+  ];
+
+  var SIZES = [24, 40, 72];
+  var CELL_W = 96;                 // ancho de columna (cabe el 72px + etiqueta)
+  var ROW_H = 96 + 22;             // alto de fila por tamaño + etiqueta
+  var PAD = 18;
+  var SECTION_H = 30;
+
+  // Comprobacion de cobertura: avisa si el motor no conoce alguna clave
+  var missing = [];
+  [].concat(CREATURES, BOSSES, HEROES, ITEMS).forEach(function (k) {
+    if (!window.Sprites.hasKind(k)) missing.push(k);
+  });
+  if (missing.length) console.warn("kinds ausentes en Sprites:", missing);
+
+  // --- flags de la barra ---------------------------------------------------
+  var flags = {};
+  Array.prototype.forEach.call(document.querySelectorAll("#bar input[data-flag]"), function (el) {
+    el.addEventListener("change", function () { flags[el.dataset.flag] = el.checked; });
+  });
+  var elCells = document.getElementById("cells");
+  var elPause = document.getElementById("pause");
+  var elFps = document.getElementById("fps");
+
+  function opts(t, isHero) {
+    var o = {
+      t: t,
+      facing: flags.facing ? -1 : 1,
+      hurt: flags.hurt ? 0.5 + 0.5 * Math.sin(t * 6) : 0,
+      frozen: !!flags.frozen,
+      burning: !!flags.burning,
+      poisoned: !!flags.poisoned,
+      shielded: !!flags.shielded,
+      charging: !!flags.charging,
+      enraged: !!flags.enraged,
+      elite: !!flags.elite,
+      dead: !!flags.dead
+    };
+    if (isHero) {
+      o.attacking = flags.attacking ? (t * 1.4) % 1 : 0;
+      o.dashing = !!flags.dashing;
+      o.shield = flags.shield ? 1 : 0;
+      o.lowHp = !!flags.lowHp;
+    }
+    return o;
+  }
+
+  // --- maquetacion --------------------------------------------------------
+  var layout = [], totalH = 0, cols = 1;
+  var bg = document.createElement("canvas");      // capa estatica pre-renderizada
+  var bgx = bg.getContext("2d");
+
+  // Todo lo que no se mueve (titulos, etiquetas, casillas, muestras de paleta)
+  // se pinta UNA vez aqui: si no, los 147 fillText por frame se comen el cuadro.
+  function rebuildBg() {
+    bg.width = cv.width;
+    bg.height = cv.height;
+    bgx.fillStyle = "#06060b";
+    bgx.fillRect(0, 0, bg.width, bg.height);
+    var showCells = elCells.checked;
+    for (var i = 0; i < layout.length; i++) {
+      var e = layout[i];
+      if (e.header) {
+        bgx.fillStyle = "#ffd77a";
+        bgx.font = "13px Consolas, monospace";
+        bgx.textAlign = "left";
+        bgx.fillText(e.header, PAD, e.y + 18);
+        bgx.strokeStyle = "#23233a";
+        bgx.lineWidth = 1;
+        bgx.beginPath();
+        bgx.moveTo(PAD, e.y + 24.5); bgx.lineTo(bg.width - PAD, e.y + 24.5);
+        bgx.stroke();
+        continue;
+      }
+      // casilla de referencia: si el sprite se sale mucho de aqui, esta mal
+      if (showCells) {
+        bgx.strokeStyle = "rgba(90,110,160,0.28)";
+        bgx.lineWidth = 1;
+        bgx.strokeRect(
+          Math.round(e.x - e.size / 2) + 0.5, Math.round(e.y - e.size / 2) + 0.5,
+          e.size - 1, e.size - 1
+        );
+      }
+      bgx.fillStyle = "#8e97ad";
+      bgx.font = "10px Consolas, monospace";
+      bgx.textAlign = "center";
+      bgx.fillText(e.kind, e.x, e.y + 52);
+      var p = window.Sprites.palette(e.kind);
+      var keys = ["main", "dark", "light", "accent"];
+      for (var c = 0; c < 4; c++) {
+        bgx.fillStyle = p[keys[c]];
+        bgx.fillRect(e.x - 16 + c * 8, e.y + 56, 7, 5);
+      }
+    }
+  }
+  elCells.addEventListener("change", rebuildBg);
+
+  function relayout() {
+    var w = Math.max(640, window.innerWidth);
+    cols = Math.max(4, Math.floor((w - PAD * 2) / CELL_W));
+    cv.width = w;
+    layout = [];
+    var y = PAD;
+    var groups = [
+      ["CRIATURAS", CREATURES, "creature"],
+      ["JEFES", BOSSES, "creature"],
+      ["HEROES  (classId)", HEROES, "hero"],
+      ["OBJETOS", ITEMS, "item"]
+    ];
+    for (var g = 0; g < groups.length; g++) {
+      var name = groups[g][0], list = groups[g][1], type = groups[g][2];
+      for (var s = 0; s < SIZES.length; s++) {
+        layout.push({ header: name + "  —  " + SIZES[s] + "px", y: y });
+        y += SECTION_H;
+        var rows = Math.ceil(list.length / cols);
+        for (var i = 0; i < list.length; i++) {
+          layout.push({
+            kind: list[i], type: type, size: SIZES[s],
+            x: PAD + (i % cols) * CELL_W + CELL_W / 2,
+            y: y + Math.floor(i / cols) * ROW_H + ROW_H / 2 - 8
+          });
+        }
+        y += rows * ROW_H + 8;
+      }
+      y += 14;
+    }
+    totalH = y + PAD;
+    cv.height = totalH;
+    rebuildBg();
+  }
+  relayout();
+  window.addEventListener("resize", relayout);
+
+  // --- bucle --------------------------------------------------------------
+  var t = 0, last = performance.now(), frames = 0, acc = 0;
+
+  function frame(now) {
+    var dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    if (!elPause.checked) t += dt;
+
+    // fps
+    frames++; acc += dt;
+    if (acc > 0.5) { elFps.textContent = (frames / acc).toFixed(0) + " fps"; frames = 0; acc = 0; }
+
+    // solo se redibuja la banda visible: el canvas es muy alto
+    var top = Math.max(0, window.scrollY - 140);
+    var bot = Math.min(cv.height, window.scrollY + window.innerHeight + 140);
+    ctx.drawImage(bg, 0, top, cv.width, bot - top, 0, top, cv.width, bot - top);
+
+    var oC = opts(t, false), oH = opts(t, true);
+
+    for (var i = 0; i < layout.length; i++) {
+      var e = layout[i];
+      if (e.header || e.y < top || e.y > bot) continue;
+      if (e.type === "hero") window.Sprites.drawHero(ctx, e.kind, e.x, e.y, e.size, oH);
+      else if (e.type === "item") window.Sprites.drawItem(ctx, e.kind, e.x, e.y, e.size, oC);
+      else window.Sprites.drawCreature(ctx, e.kind, e.x, e.y, e.size, oC);
+    }
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

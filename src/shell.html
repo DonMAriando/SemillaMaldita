@@ -1,0 +1,315 @@
+<div id="app">
+
+  <!-- ══════════════════ MENÚ ══════════════════ -->
+  <section id="screen-menu" class="screen">
+    <div class="menuTop">
+      <button class="iconBtn" id="btnSettings" aria-label="Ajustes">⚙️</button>
+      <button class="iconBtn" id="btnCodex" aria-label="Códice">📖</button>
+    </div>
+
+    <div class="brand">
+      <div class="brandGlyph">🌱</div>
+      <h1 class="title">SEMILLA<br>MALDITA</h1>
+      <p class="sub" id="menuTagline">Roguelike por semilla</p>
+    </div>
+
+    <div class="menuCol">
+      <button class="btn primary big" id="btnPlay">
+        <span class="bIcon">▶</span><span class="bTxt" data-i18n="descend">DESCENDER</span>
+      </button>
+
+      <button class="btn daily" id="btnDaily">
+        <span class="bIcon">📅</span>
+        <span class="bTxt"><span data-i18n="daily">RETO DIARIO</span>
+          <small id="dailyBadge"></small></span>
+        <span class="streakPill" id="streakPill"></span>
+      </button>
+
+      <button class="btn weekly" id="btnWeekly">
+        <span class="bIcon">☠️</span>
+        <span class="bTxt"><span data-i18n="weekly">MALDICIÓN</span>
+          <small id="weeklyBadge"></small></span>
+      </button>
+
+      <div class="row2">
+        <button class="btn ghost" id="btnTree">
+          <span class="bIcon">✦</span><span class="bTxt" data-i18n="shop">SANTUARIO</span>
+          <b class="essTag" id="essTagMenu">0</b>
+        </button>
+        <button class="btn ghost" id="btnHall">
+          <span class="bIcon">🏆</span><span class="bTxt" data-i18n="hall">SALÓN</span>
+        </button>
+      </div>
+
+      <div class="seedRow">
+        <input id="seedInput" maxlength="24" spellcheck="false" autocomplete="off" placeholder="SEMILLA">
+        <button class="iconBtn solid" id="btnRandSeed" aria-label="Semilla aleatoria">🎲</button>
+      </div>
+
+      <div class="menuStats" id="menuStats"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ ELEGIR ESTIRPE ══════════════════ -->
+  <section id="screen-class" class="screen">
+    <header class="shHead">
+      <button class="iconBtn" id="classBack">←</button>
+      <h2 data-i18n="chooseClass">ELIGE TU ESTIRPE</h2>
+      <b class="essTag" id="essTagClass">0</b>
+    </header>
+    <div class="scrollArea">
+      <div id="classList" class="cardCol"></div>
+      <h3 class="secTitle" data-i18n="chooseDiff">DIFICULTAD</h3>
+      <div id="diffList" class="diffRow"></div>
+      <div id="pactSummary" class="pactSummary"></div>
+    </div>
+    <footer class="shFoot">
+      <button class="btn primary big" id="btnStartRun">
+        <span class="bIcon">▶</span><span class="bTxt" data-i18n="descend">DESCENDER</span>
+      </button>
+    </footer>
+  </section>
+
+  <!-- ══════════════════ RETO DIARIO ══════════════════ -->
+  <section id="screen-daily" class="screen">
+    <header class="shHead">
+      <button class="iconBtn" id="dailyBack">←</button>
+      <h2 data-i18n="dailyTitle">RETO DIARIO</h2>
+      <span class="streakPill" id="streakPill2"></span>
+    </header>
+    <div class="scrollArea" id="dailyBody"></div>
+  </section>
+
+  <!-- ══════════════════ MALDICIÓN SEMANAL ══════════════════ -->
+  <section id="screen-weekly" class="screen">
+    <header class="shHead">
+      <button class="iconBtn" id="weeklyBack">←</button>
+      <h2 data-i18n="weeklyTitle">MALDICIÓN SEMANAL</h2>
+      <span></span>
+    </header>
+    <div class="scrollArea" id="weeklyBody"></div>
+  </section>
+
+  <!-- ══════════════════ SALÓN DE LA FAMA ══════════════════ -->
+  <section id="screen-hall" class="screen">
+    <header class="shHead">
+      <button class="iconBtn" id="hallBack">←</button>
+      <h2 data-i18n="hallTitle">SALÓN DE LA FAMA</h2>
+      <span></span>
+    </header>
+    <div class="scrollArea" id="hallBody"></div>
+  </section>
+
+  <!-- ══════════════════ ÁRBOL DE ESENCIA ══════════════════ -->
+  <section id="screen-tree" class="screen">
+    <header class="shHead">
+      <button class="iconBtn" id="treeBack">←</button>
+      <h2 data-i18n="essenceShop">ÁRBOL DE ESENCIA</h2>
+      <b class="essTag" id="essTagTree">0</b>
+    </header>
+    <nav class="tabs" id="treeTabs">
+      <button class="tab active" data-tab="up"   data-i18n="tabUpgrades">MEJORAS</button>
+      <button class="tab" data-tab="cls"  data-i18n="tabClasses">ESTIRPES</button>
+      <button class="tab" data-tab="pact" data-i18n="tabPacts">PACTOS</button>
+      <button class="tab" data-tab="ach"  data-i18n="tabAchievements">LOGROS</button>
+    </nav>
+    <div class="scrollArea" id="treeBody"></div>
+  </section>
+
+  <!-- ══════════════════ AJUSTES ══════════════════ -->
+  <section id="screen-settings" class="screen">
+    <header class="shHead">
+      <button class="iconBtn" id="setBack">←</button>
+      <h2 data-i18n="settings">AJUSTES</h2>
+      <span></span>
+    </header>
+    <div class="scrollArea" id="setBody"></div>
+  </section>
+
+  <!-- ══════════════════ CÓDICE ══════════════════ -->
+  <section id="screen-codex" class="screen">
+    <header class="shHead">
+      <button class="iconBtn" id="codexBack">←</button>
+      <h2>CÓDICE</h2>
+      <span class="essTag" id="codexCount"></span>
+    </header>
+    <div class="scrollArea" id="codexBody"></div>
+  </section>
+
+  <!-- ══════════════════ JUEGO ══════════════════ -->
+  <section id="screen-game" class="screen game">
+
+    <div id="hud">
+      <div class="hudTop">
+        <button class="iconBtn tiny" id="btnPause" aria-label="Pausa">⏸</button>
+        <div class="floorTag">
+          <b id="hFloor">1</b>
+          <small id="hBiome">Criptas</small>
+        </div>
+        <div class="hudChips" id="hudChips">
+          <span class="chip" id="chipAtk">⚔ <b>0</b></span>
+          <span class="chip" id="chipDef">🛡 <b>0</b></span>
+          <span class="chip" id="chipGold">◈ <b>0</b></span>
+        </div>
+        <div class="hudRight">
+          <span class="lvlTag">Nv <b id="hLvl">1</b></span>
+        </div>
+      </div>
+
+      <div class="barStack">
+        <div class="hpBar">
+          <div class="hpFill" id="hHpFill"></div>
+          <div class="shFill" id="hShFill"></div>
+          <span class="hpTxt" id="hHpTxt">0/0</span>
+        </div>
+        <div class="xpBar"><div class="xpFill" id="hXpFill"></div></div>
+      </div>
+
+      <div class="relicStrip" id="relicStrip"></div>
+      <div class="bossBar" id="bossBar">
+        <span class="bossName" id="bossName"></span>
+        <div class="bossTrack"><div class="bossFill" id="bossFill"></div></div>
+      </div>
+    </div>
+
+    <div id="canvasWrap"><canvas id="cv"></canvas></div>
+    <div class="comboBanner" id="comboBanner"></div>
+    <div id="log" aria-live="polite"></div>
+
+    <div id="controls">
+      <div id="dpad">
+        <button class="dbtn upleft"    data-dir="-1,-1" aria-label="Arriba izquierda">↖</button>
+        <button class="dbtn up"        data-dir="0,-1"  aria-label="Arriba">▲</button>
+        <button class="dbtn upright"   data-dir="1,-1"  aria-label="Arriba derecha">↗</button>
+        <button class="dbtn left"      data-dir="-1,0"  aria-label="Izquierda">◀</button>
+        <button class="dbtn mid"       id="btnWait" aria-label="Esperar">⏳</button>
+        <button class="dbtn right"     data-dir="1,0"   aria-label="Derecha">▶</button>
+        <button class="dbtn downleft"  data-dir="-1,1"  aria-label="Abajo izquierda">↙</button>
+        <button class="dbtn down"      data-dir="0,1"   aria-label="Abajo">▼</button>
+        <button class="dbtn downright" data-dir="1,1"   aria-label="Abajo derecha">↘</button>
+      </div>
+      <div id="actions">
+        <button class="abtn" id="btnPotion" aria-label="Poción">
+          <span class="aIcon">🧪</span><span class="badge" id="potBadge">0</span>
+        </button>
+        <button class="abtn" id="btnDash" aria-label="Impulso">
+          <span class="aIcon">💨</span><span class="cdRing" id="dashCd"></span>
+        </button>
+        <button class="abtn" id="btnAbility" aria-label="Habilidad">
+          <span class="aIcon" id="abIcon">✴️</span><span class="cdRing" id="abCd"></span>
+        </button>
+        <button class="abtn ult" id="btnUlt" aria-label="Definitivo">
+          <span class="aIcon" id="ultIcon">🌀</span>
+          <span class="ultFill" id="ultFill"></span>
+        </button>
+        <button class="abtn wide" id="btnDescend">
+          <span class="aIcon">🪜</span><span class="aTxt" data-i18n="godown">BAJAR</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="tutorial" id="tutorial"></div>
+  </section>
+
+  <!-- ══════════════════ RESULTADO ══════════════════ -->
+  <section id="screen-result" class="screen">
+    <div class="scrollArea center">
+      <div class="resIcon" id="resIcon">💀</div>
+      <h2 class="resTitle" id="resTitle">HAS MUERTO</h2>
+      <p class="resSub" id="resSub"></p>
+      <div class="recordFlag" id="recordFlag" data-i18n="newRecord">¡NUEVO RÉCORD!</div>
+
+      <div class="scoreBox">
+        <small data-i18n="finalScore">PUNTAJE</small>
+        <b id="resScore">0</b>
+      </div>
+      <div class="archTag" id="resArch"></div>
+      <p class="resTitleSub" id="resEpithet"></p>
+
+      <div class="resGrid" id="resGrid"></div>
+      <div class="shareBlock" id="shareBlock"></div>
+      <div class="buildBox">
+        <small data-i18n="runRelics">Tu construcción</small>
+        <div id="resRelics" class="relicWrap"></div>
+      </div>
+      <div class="seedBox"><small data-i18n="seedOfRun">Semilla de esta partida</small><span id="resSeed">—</span></div>
+    </div>
+    <footer class="shFoot col">
+      <button class="btn primary big" id="btnShare"><span class="bIcon">📤</span><span class="bTxt" data-i18n="share">COMPARTIR</span></button>
+      <button class="btn daily" id="btnChallenge"><span class="bIcon">🥊</span><span class="bTxt" data-i18n="challengeShare">RETA A UN AMIGO</span></button>
+      <div class="row2">
+        <button class="btn ghost" id="btnAgain" data-i18n="retry">REINTENTAR</button>
+        <button class="btn ghost" id="btnNewRun" data-i18n="newRun">NUEVA PARTIDA</button>
+      </div>
+      <button class="btn flat" id="btnResultMenu" data-i18n="toMenu">MENÚ</button>
+    </footer>
+  </section>
+
+  <!-- ══════════════════ SUPERPOSICIONES ══════════════════ -->
+  <div class="overlay" id="ov-cards">
+    <div class="ovInner">
+      <h3 class="ovTitle" id="cardsTitle" data-i18n="pickRelic">ELIGE UNA RELIQUIA</h3>
+      <div class="cardRow" id="cardRow"></div>
+      <div class="ovFoot" id="cardsFoot"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-sanctuary">
+    <div class="ovInner">
+      <h3 class="ovTitle" data-i18n="sanctuary">SANTUARIO</h3>
+      <p class="ovSub" data-i18n="sancIntro"></p>
+      <div class="shopGrid" id="sancGrid"></div>
+      <div class="extractBox" id="extractBox"></div>
+      <button class="btn primary big" id="btnSancGo" data-i18n="continueDown">SEGUIR BAJANDO</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-altar">
+    <div class="ovInner">
+      <h3 class="ovTitle" id="altarTitle">ALTAR</h3>
+      <p class="ovSub" id="altarSub"></p>
+      <div class="cardRow" id="altarRow"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-pause">
+    <div class="ovInner">
+      <h3 class="ovTitle" data-i18n="paused">PAUSA</h3>
+      <div class="pauseStats" id="pauseStats"></div>
+      <div class="relicWrap" id="pauseRelics"></div>
+      <button class="btn primary big" id="btnResume" data-i18n="resume">CONTINUAR</button>
+      <button class="btn ghost" id="btnPauseSettings" data-i18n="settings">AJUSTES</button>
+      <button class="btn danger" id="btnAbandon" data-i18n="abandon">ABANDONAR PARTIDA</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-relic">
+    <div class="ovInner">
+      <h3 class="ovTitle" id="relicDetailTitle"></h3>
+      <div id="relicDetailBody"></div>
+      <button class="btn ghost" id="relicDetailClose" data-i18n="close">CERRAR</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-confirm">
+    <div class="ovInner narrow">
+      <p class="confirmMsg" id="confirmMsg"></p>
+      <div class="row2">
+        <button class="btn danger" id="confirmYes" data-i18n="confirm">CONFIRMAR</button>
+        <button class="btn ghost" id="confirmNo" data-i18n="cancel">CANCELAR</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-challenge">
+    <div class="ovInner narrow">
+      <h3 class="ovTitle" data-i18n="challenge">TE RETAN</h3>
+      <p class="ovSub" id="challengeMsg"></p>
+      <button class="btn primary big" id="btnChallengeGo" data-i18n="challengeAccept">ACEPTO EL DUELO</button>
+      <button class="btn ghost" id="btnChallengeSkip" data-i18n="challengeSkip">OTRA VEZ SERÁ</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <div class="achToast" id="achToast"></div>
+</div>
