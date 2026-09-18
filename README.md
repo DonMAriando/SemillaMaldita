@@ -4,11 +4,10 @@ Roguelike de un solo archivo: bajás, elegís reliquias, morís y compartís la 
 
 ## Jugar
 
-**https://semilla-maldita.pages.dev**
+- **GitHub Pages:** https://donmariando.github.io/SemillaMaldita/
+- **Cloudflare Pages:** https://semilla-maldita.pages.dev
 
-Publicado en [Cloudflare Pages](https://pages.cloudflare.com/). También sirve `https://semilla-maldita.pages.dev/SemillaMaldita.html`.
-
-En local: abrí `SemillaMaldita.html` (doble clic o cualquier servidor estático). No hace falta instalar nada.
+Las dos sirven el mismo juego. En local: abrí `SemillaMaldita.html` (doble clic o cualquier servidor estático). No hace falta instalar nada.
 
 ## Qué hay
 

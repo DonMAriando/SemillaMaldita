@@ -2,6 +2,7 @@ name: pages
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 permissions:
   contents: read
   pages: write
@@ -18,8 +19,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Pack playable files
+        run: |
+          mkdir site
+          cp SemillaMaldita.html site/index.html
+          cp SemillaMaldita.html site/SemillaMaldita.html
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: site
       - id: deployment
         uses: actions/deploy-pages@v4
